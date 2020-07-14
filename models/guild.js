@@ -9,6 +9,10 @@ const guild = new Schema({
         type: Number,
         required: false,
     },
+    birthdayRole: {
+        type: Number,
+        required: false,
+    },
     created: {
         type:Date,
         default: Date.now()

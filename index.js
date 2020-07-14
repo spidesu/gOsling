@@ -1,7 +1,10 @@
 const Discord = require('discord.js')
 const mongoose = require('mongoose')
 const Birthday = require('./actions/birthday')
+const cron = require('./cron-jobs')
+const birthdayJob = require('./cron-jobs')
 const client = new Discord.Client()
+require('dotenv').config()
 const prefix = 'g!'
 
 
@@ -9,7 +12,7 @@ const prefix = 'g!'
 async function start() {
     const url = "mongodb://localhost:27017/gosling";
     await mongoose.connect(url, {useNewUrlParser: true,useUnifiedTopology: true})
-    client.login('NjcwMzE0NTQ4ODU0Nzg0MDAw.XwnA8Q.kNv3PsvZbmHtfpC5rqPpCilJhq0');
+    client.login(process.env.TOKEN);
 }
 
 client.on('ready', () => {
@@ -34,3 +37,4 @@ client.on('message',async msg => {
   });
 
 start();
+cron.birthdayJob.start()

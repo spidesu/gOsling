@@ -1,4 +1,5 @@
 const User = require("../models/user")
+const tools = require ("../tools")
 //const { Guild } = require("discord.js")
 const Guild = require("../models/guild")
 class Birthday {
@@ -7,6 +8,8 @@ class Birthday {
         this.args = args
         this.guild = guild
         this.msg = msg
+        this.typicalAnswer = "Тебе сюда нельзя"
+
     }
     async processCommand()
     {
@@ -15,7 +18,9 @@ class Birthday {
         console.log(this.args)
         switch (this.args.shift()) {
             case 'add':
-                answer = await this.addBirthday(this.args, this.guild)
+                tools.checkAdmin(this.msg) 
+                ? answer = await this.addBirthday(this.args, this.guild)
+                : answer = typicalAnswer
                 break;
             case 'month':
                 answer = await this.getMonthBirthday(this.args)
@@ -28,6 +33,9 @@ class Birthday {
                 break;
             case 'channel':
                 answer = await this.setBirthdayChannel(this.guild,this.msg.channel.id)
+            case 'role':
+                answer = await this.setBirthdayRole(this.args, this.guild,this.msg)
+                break;
             default:
                 break; 
         }
@@ -49,6 +57,7 @@ class Birthday {
 
     async addBirthday(args, guildId)
     {
+        if (args.length < 2) return "Недостаточное количество аргументов"
         let message
         let guildMemberId = args[0].replace(/\D/g,'')
         //let birthdate = args[1].replace(/\./g, '/')
@@ -104,6 +113,43 @@ class Birthday {
         guild.birthdayChannel = channel
         await guild.save()
         return "На этот канал будут поступать сообщения о днях рождениях"
+    }
+
+    async getTodayBirthdays(guildId)
+    {
+        let message = ""
+        let guild = await Guild.findOne({guild: guildId})
+
+        if (!guild)
+        {
+            return false            
+        }
+
+        let birthdayMembers = await User.find({guild: guild._id, birthDate: Date.now()})
+
+        return birthdayMembers
+    }
+
+    async setBirthdayRole(args,guildId, msg)
+    {
+        let message = ""
+        let roleName = args[0]
+        let guild = await Guild.findOne({guild: guildId})
+        
+        if (!guild)
+        {
+            guild = new Guild({guild: guildId})          
+        }
+        let role = msg.guild.roles.cache.find(role => role.name === roleName)
+        if (!role) {
+            return 'Такой роли не существует' 
+        }
+        guild.birthdayRole = role.id
+        await guild.save()
+        message = 'Роль установлена!'
+
+        return message
+
     }
 }
 
