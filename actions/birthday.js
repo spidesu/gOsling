@@ -9,18 +9,23 @@ class Birthday {
         this.guild = guild
         this.msg = msg
         this.typicalAnswer = "Тебе сюда нельзя"
+        this.adminCommands = ['add','delete','channel','role']
 
     }
     async processCommand()
     {
+        let command = this.args.shift()
         let answer
         console.log(this.action)
         console.log(this.args)
-        switch (this.args.shift()) {
+        if (this.adminCommands.indexOf(command) != -1)
+        {
+            if (!tools.checkAdmin(this.msg))
+            return this.typicalAnswer
+        }
+        switch (command) {
             case 'add':
-                tools.checkAdmin(this.msg) 
-                ? answer = await this.addBirthday(this.args, this.guild)
-                : answer = typicalAnswer
+                answer = await this.addBirthday(this.args, this.guild)
                 break;
             case 'month':
                 answer = await this.getMonthBirthday(this.args)
@@ -33,6 +38,7 @@ class Birthday {
                 break;
             case 'channel':
                 answer = await this.setBirthdayChannel(this.guild,this.msg.channel.id)
+                break;
             case 'role':
                 answer = await this.setBirthdayRole(this.args, this.guild,this.msg)
                 break;

@@ -1,5 +1,5 @@
 {
-  "name": "gosling-v2.5",
+  "name": "gosling",
   "version": "2.5.0",
   "description": "Discord bot",
   "main": "index.js",
