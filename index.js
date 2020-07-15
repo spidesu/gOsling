@@ -19,7 +19,7 @@ async function start() {
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
     let birthdayJob = new CronJob ('0 0 12 * * *', async () => {
-      
+      let role
       let birthdayArray = []
       let guilds = await Guild.find({})
       guilds.forEach(async guild_db => {
@@ -34,7 +34,7 @@ client.on('ready', () => {
           let birthdayMembers = await tools.getTodayBirthdays(guild_db.guild)
           if (guild_db.birthdayRole)
           {
-            let role = guild.roles.cache.get(guild_db.birthdayRole)
+            role = guild.roles.cache.get(guild_db.birthdayRole)
           }
           if (birthdayMembers.length > 0)
           {
@@ -43,7 +43,7 @@ client.on('ready', () => {
               let guildMember = guild.members.cache.get(member.guildMemberId)
               birthdayArray.push(guildMember.toString())
               console.log(member)
-              if (guild_db.birthdayRole)
+              if (typeof role !== "undefined")
               guildMember.addRole(role)
           })
           messageText = messageText.replace(/{message}/, birthdayArray.join(" "))
