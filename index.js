@@ -38,11 +38,11 @@ client.on('ready', () => {
           }
           if (birthdayMembers.length > 0)
           {
-            console.log(birthdayMembers)
+            //console.log(birthdayMembers)
           birthdayMembers.forEach(member => {
               let guildMember = guild.members.cache.get(member.guildMemberId)
               birthdayArray.push(guildMember.toString())
-              console.log(member)
+              //console.log(member)
               if (typeof role !== "undefined")
               guildMember.addRole(role)
           })
