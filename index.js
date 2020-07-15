@@ -1,8 +1,9 @@
 const Discord = require('discord.js')
 const mongoose = require('mongoose')
+const CronJob = require('cron').CronJob
 const Birthday = require('./actions/birthday')
-const cron = require('./cron-jobs')
-const birthdayJob = require('./cron-jobs')
+const Guild = require("./models/guild")
+const tools = require("./tools")
 const client = new Discord.Client()
 require('dotenv').config()
 const prefix = 'g!'
@@ -12,11 +13,46 @@ const prefix = 'g!'
 async function start() {
     const url = "mongodb://localhost:27017/gosling";
     await mongoose.connect(url, {useNewUrlParser: true,useUnifiedTopology: true})
-    client.login(process.env.TOKEN);
+    await client.login(process.env.TOKEN)
 }
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
+    let birthdayJob = new CronJob ('0 0 12 * * *', async () => {
+      
+      let birthdayArray = []
+      let guilds = await Guild.find({})
+      guilds.forEach(async guild_db => {
+          let messageText = "Поздравляем {message} с днём рождения! Всем по тортику!"
+          let guild = await client.guilds.cache.get(guild_db.guild)
+          if (!guild || !guild_db.birthdayChannel)
+          {
+            return;
+          }
+          
+          let birthdayChannel = guild.channels.cache.get(guild_db.birthdayChannel)
+          let birthdayMembers = await tools.getTodayBirthdays(guild_db.guild)
+          if (guild_db.birthdayRole)
+          {
+            let role = guild.roles.cache.get(guild_db.birthdayRole)
+          }
+          if (birthdayMembers.length > 0)
+          {
+            console.log(birthdayMembers)
+          birthdayMembers.forEach(member => {
+              let guildMember = guild.members.cache.get(member.guildMemberId)
+              birthdayArray.push(guildMember.toString())
+              console.log(member)
+              if (guild_db.birthdayRole)
+              guildMember.addRole(role)
+          })
+          messageText = messageText.replace(/{message}/, birthdayArray.join(" "))
+          birthdayChannel.send(messageText)
+          }
+      });
+  }, null, true, 'Europe/Moscow')
+  birthdayJob.start()
+    
   });
   
 client.on('message',async msg => {
@@ -24,12 +60,13 @@ client.on('message',async msg => {
     if (msg.content.substring(0,2) === prefix)
     {
         let command = msg.content.substring(2)
-        let args = command.split(' ')
+        let args = command.replace(/ +/g,' ').trim().split(' ')
         let action = args.shift()
         let answer
         console.log(action)
         if (action === 'birthday') {
-            let birthday = new Birthday(args, msg.guild.id,msg);
+         
+            let birthday = new Birthday(args,msg);
             answer = await birthday.processCommand()
             msg.reply(answer)
           }
@@ -37,4 +74,3 @@ client.on('message',async msg => {
   });
 
 start();
-cron.birthdayJob.start()

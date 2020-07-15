@@ -2,7 +2,7 @@ const {Schema,model} = require('mongoose')
 
 const user = new Schema({
     guildMemberId: {
-        type: Number,
+        type: String,
         required: true,
     },
     guild: {

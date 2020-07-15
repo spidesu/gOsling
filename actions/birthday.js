@@ -3,10 +3,10 @@ const tools = require ("../tools")
 //const { Guild } = require("discord.js")
 const Guild = require("../models/guild")
 class Birthday {
-    constructor(args, guild, msg) 
+    constructor(args, msg = null) 
     {
         this.args = args
-        this.guild = guild
+        this.guild = msg.guild.id
         this.msg = msg
         this.typicalAnswer = "Тебе сюда нельзя"
         this.adminCommands = ['add','delete','channel','role']
@@ -18,6 +18,7 @@ class Birthday {
         let answer
         console.log(this.action)
         console.log(this.args)
+        console.log(this.guild)
         if (this.adminCommands.indexOf(command) != -1)
         {
             if (!tools.checkAdmin(this.msg))
@@ -25,7 +26,7 @@ class Birthday {
         }
         switch (command) {
             case 'add':
-                answer = await this.addBirthday(this.args, this.guild)
+                answer = await this.addBirthday(this.args, this.guild, this.msg)
                 break;
             case 'month':
                 answer = await this.getMonthBirthday(this.args)
@@ -34,7 +35,7 @@ class Birthday {
                 answer = await this.deleteBirthday(this.args)
                 break;
             case 'show':
-                answer = await this.getBirthday(this.args)
+                answer = await this.getBirthday(this.args, this.msg)
                 break;
             case 'channel':
                 answer = await this.setBirthdayChannel(this.guild,this.msg.channel.id)
@@ -48,24 +49,28 @@ class Birthday {
 
         return answer
     }
-    async getBirthday(args)
+    async getBirthday(args,msg)
     {
-        let guildMemberId = args[0].replace(/\D/g,'')
+        let userName = args[0]
+        let guildMemberId = msg.guild.members.cache.find(member => member.user.username === userName)
         let user = await User.findOne({guildMemberId: guildMemberId})
         if (user)
         {
             let month = + user.birthDate.getMonth() + 1
-        return "У этого прекрасного человека день рождения будет " + user.birthDate.getDate() + '.' + month + '.' + user.birthDate.getFullYear();
+        return "У этого прекрасного человека день рождения будет " + user.birthDate.getDate() + '.' + month;
         }
         return "Я не нашел такого человека в базе(  "
 
     }
 
-    async addBirthday(args, guildId)
+    async addBirthday(args, guildId,msg)
     {
         if (args.length < 2) return "Недостаточное количество аргументов"
+        console.log(guildId)
+        let userName = args[0]
         let message
-        let guildMemberId = args[0].replace(/\D/g,'')
+        let guildMember = msg.guild.members.cache.find(member => member.user.username === userName)
+        let guildMemberId = guildMember.id
         //let birthdate = args[1].replace(/\./g, '/')
         let birthdateRaw = args[1].split('.')
         let birthdate = birthdateRaw[2]+ '-' + birthdateRaw[1] + '-' + birthdateRaw[0]
@@ -86,7 +91,7 @@ class Birthday {
             }
             else
             {
-                let user = new User({guildMemberId: guildMemberId, guild: guild._id, birthDate: birthdate})
+                let user = new User({guildMemberId: guildMemberId, guild: guild.id, birthDate: birthdate})
                 await user.save()
             }
             message = 'День рождения успешно добавлен/обновлен'
@@ -130,8 +135,7 @@ class Birthday {
         {
             return false            
         }
-
-        let birthdayMembers = await User.find({guild: guild._id, birthDate: Date.now()})
+        let birthdayMembers = await User.find({guild: guild._id})
 
         return birthdayMembers
     }

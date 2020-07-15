@@ -2,15 +2,15 @@ const {Schema,model} = require('mongoose')
 
 const guild = new Schema({
     guild: {
-        type: Number,
+        type: String,
         required: true,
     },
     birthdayChannel: {
-        type: Number,
+        type: String,
         required: false,
     },
     birthdayRole: {
-        type: Number,
+        type: String,
         required: false,
     },
     created: {
