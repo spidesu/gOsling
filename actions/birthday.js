@@ -16,9 +16,9 @@ class Birthday {
     {
         let command = this.args.shift()
         let answer
-        console.log(this.action)
-        console.log(this.args)
-        console.log(this.guild)
+        //console.log(this.action)
+        //console.log(this.args)
+        //console.log(this.guild)
         if (this.adminCommands.indexOf(command) != -1)
         {
             if (!this.msg.member.hasPermission("ADMINISTRATOR"))
