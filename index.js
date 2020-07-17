@@ -11,7 +11,7 @@ const prefix = 'g!'
 
 
 async function start() {
-    const url = "mongodb://localhost:27017/gosling";
+    const url = process.env.MONGODB_URL
     await mongoose.connect(url, {useNewUrlParser: true,useUnifiedTopology: true})
     await client.login(process.env.TOKEN)
 }
@@ -38,14 +38,16 @@ client.on('ready', () => {
           }
           if (birthdayMembers.length > 0)
           {
+            birthdayArray = []
             //console.log(birthdayMembers)
           birthdayMembers.forEach(member => {
               let guildMember = guild.members.cache.get(member.guildMemberId)
               birthdayArray.push(guildMember.toString())
               //console.log(member)
               if (typeof role !== "undefined")
-              guildMember.addRole(role)
+              guildMember.roles.add(role)
           })
+          console.log(birthdayArray)
           messageText = messageText.replace(/{message}/, birthdayArray.join(" "))
           birthdayChannel.send(messageText)
           }

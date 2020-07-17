@@ -75,7 +75,11 @@ class Birthday {
         let birthdateRaw = args[1].split('.')
         let birthdate = birthdateRaw[2]+ '-' + birthdateRaw[1] + '-' + birthdateRaw[0]
         console.log(birthdate)
-        birthdate = new Date(birthdate)
+        try{
+            birthdate = new Date(birthdate)
+        } catch (e) {
+            return "Неправильный формат даты"
+        }
        // return new Promise(async (resolve, reject) => {
             let guild = await Guild.findOne({guild: guildId})
             if (!guild)
@@ -83,7 +87,7 @@ class Birthday {
                 guild = new Guild({guild: guildId})
                 await guild.save()
             }
-            let user = await User.findOne({guildMemberId: guildMemberId});
+            let user = await User.findOne({guildMemberId: guildMemberId, guild: guild.id});
             if (user)
             {
                 user.birthDate = birthdate
@@ -128,7 +132,6 @@ class Birthday {
 
     async getTodayBirthdays(guildId)
     {
-        let message = ""
         let guild = await Guild.findOne({guild: guildId})
 
         if (!guild)
