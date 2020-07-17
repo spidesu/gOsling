@@ -21,7 +21,7 @@ class Birthday {
         console.log(this.guild)
         if (this.adminCommands.indexOf(command) != -1)
         {
-            if (!tools.checkAdmin(this.msg))
+            if (!this.msg.member.hasPermission("ADMINISTRATOR"))
             return this.typicalAnswer
         }
         switch (command) {

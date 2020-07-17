@@ -5,11 +5,7 @@ let tools = {
     checkAdmin: async (msg) => {
         let check = msg.member.hasPermission("ADMINISTRATOR")
 
-        if(check)
-        {
-            return true
-        }
-        return false
+        return check
     },
 
     getTodayBirthdays: async (guildId) =>
