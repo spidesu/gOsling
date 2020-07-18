@@ -1,0 +1,13 @@
+{
+    "birthday": {
+        "action": "birthday",
+        "commands": {
+            "add": "add",
+            "channel": "channel",
+            "delete": "delete",
+            "role": "role",
+            "month": "month",
+            "show": "show"
+        }
+    } 
+}

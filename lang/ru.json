@@ -1,0 +1,13 @@
+{
+    "birthday": {
+        "action": "др",
+        "commands": {
+            "add": "добавить",
+            "channel": "канал",
+            "delete": "удалить",
+            "role": "роль",
+            "month": "месяц",
+            "show": "когда"
+        }
+    } 
+}

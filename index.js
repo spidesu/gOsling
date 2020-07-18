@@ -1,13 +1,15 @@
+require('dotenv').config()
 const Discord = require('discord.js')
 const mongoose = require('mongoose')
 const CronJob = require('cron').CronJob
-const Birthday = require('./actions/birthday')
+const Birthday = require('./actions/birthdayAction')
 const Guild = require("./models/guild")
 const tools = require("./tools")
+const fs = require('fs')
+const util = require('util')
 const client = new Discord.Client()
-require('dotenv').config()
+const log_error = fs.createWriteStream(__dirname + '/logs/error.log', {flags:'a'})
 const prefix = 'g!'
-
 
 
 async function start() {
@@ -15,6 +17,11 @@ async function start() {
     await mongoose.connect(url, {useNewUrlParser: true,useUnifiedTopology: true})
     await client.login(process.env.TOKEN)
 }
+
+process.on('uncaughtException', (err) => {
+  console.log('Caught Exception: ' + err)
+  log_error.write(util.format('Caught Exception: ' + err)+ '\n')
+})
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
