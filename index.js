@@ -65,14 +65,14 @@ client.on('ready', () => {
   });
   
 client.on('message',async msg => {
-    console.log(msg.content.substring(0,2));
+    //console.log(msg.content.substring(0,2));
     if (msg.content.substring(0,2) === prefix)
     {
         let command = msg.content.substring(2)
         let args = command.replace(/ +/g,' ').trim().split(' ')
         let action = args.shift()
         let answer
-        console.log(action)
+        //console.log(action)
         if (action === 'birthday') {
          
             let birthday = new Birthday(args,msg);
