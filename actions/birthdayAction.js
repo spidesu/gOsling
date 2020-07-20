@@ -32,7 +32,7 @@ class Birthday {
                 answer = await this.getMonthBirthday(this.args)
                 break;
             case 'delete':
-                answer = await this.deleteBirthday(this.args)
+                answer = await this.deleteBirthday(this.args,this.msg)
                 break;
             case 'show':
                 answer = await this.getBirthday(this.args, this.msg)
@@ -43,6 +43,8 @@ class Birthday {
             case 'role':
                 answer = await this.setBirthdayRole(this.args, this.guild,this.msg)
                 break;
+            case 'list':
+                answer = await this.getBirthdayList(this.guild,this.msg)
             default:
                 break; 
         }
@@ -52,12 +54,12 @@ class Birthday {
     async getBirthday(args,msg)
     {
         let userName = args[0]
-        let guildMemberId = msg.guild.members.cache.find(member => member.user.username === userName)
-        let user = await User.findOne({guildMemberId: guildMemberId})
+        let guildMember = msg.guild.members.cache.find(member => member.user.username === userName)
+        let user = await User.findOne({guildMemberId: guildMember.id, birthDate: {$ne:null}})
         if (user)
         {
             let month = + user.birthDate.getMonth() + 1
-        return "У этого прекрасного человека день рождения будет " + user.birthDate.getDate() + '.' + month;
+        return "У этого прекрасного человека день рождения будет " + tools.formatDateDigit(user.birthDate.getDate()) + '.' + tools.formatDateDigit(month);
         }
         return "Я не нашел такого человека в базе(  "
 
@@ -66,7 +68,7 @@ class Birthday {
     async addBirthday(args, guildId,msg)
     {
         if (args.length < 2) return "Недостаточное количество аргументов"
-        console.log(guildId)
+        //console.log(guildId)
         let userName = args[0]
         let message
         let guildMember = msg.guild.members.cache.find(member => member.user.username === userName)
@@ -103,9 +105,12 @@ class Birthday {
     //    });
     }
 
-    async deleteBirthday(args)
+    async deleteBirthday(args,msg)
     {
-        let guildMemberId = args[0].replace(/\D/g,'')
+        let userName = args[0]
+        let message
+        let guildMember = msg.guild.members.cache.find(member => member.user.username === userName)
+        let guildMemberId = guildMember.id
         let user = await User.findOne({guildMemberId: guildMemberId});
 
         if (!user)
@@ -151,6 +156,20 @@ class Birthday {
 
         return message
 
+    }
+
+    async getBirthdayList(guildId,msg)
+    {
+        let message = "Список дат рождений: \n"
+        let users = await User.find({guild: guildId, birthDate: {$ne:null}})
+        let userName
+        users.forEach((user) => {
+            userName = msg.guild.members.cache.find(member => member.user.id === user.guildMemberId)
+            userName = userName.user.username
+            message += userName + ' - ' + tools.formatDate(user.birthDate)
+        })
+
+        return message
     }
 }
 
