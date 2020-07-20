@@ -25,7 +25,35 @@ process.on('uncaughtException', (err) => {
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
-    let birthdayJob = schedule.scheduleJob ('0 0 12 * * *', async () => {
+  });
+  
+client.on('message',async msg => {
+    //console.log(msg.content.substring(0,2));
+    if (msg.content.substring(0,2) === prefix)
+    {
+        let command = msg.content.substring(2)
+        //let args = command.replace(/ +/g,' ').trim().split(' ')
+        let args = command.split(/\s(?=(?:(?:[^"]*"){2})*[^"]*$)/)
+        args.forEach(arg => {
+          arg.replace(/"/,'')
+        })
+        args = args.map(arg => arg.replace(/"/g,''))
+        console.log(args)
+        let action = args.shift()
+        let answer
+        console.log(action)
+        if (action === 'birthday') {
+         
+            let birthday = new Birthday(args,msg);
+            answer = await birthday.processCommand()
+            msg.reply(answer)
+          }
+    }
+  });
+
+start();
+
+let birthdayJob = schedule.scheduleJob('* * * * *', async () => {
       let role
       let birthdayArray = []
       let guilds = await Guild.find({})
@@ -59,26 +87,4 @@ client.on('ready', () => {
           birthdayChannel.send(messageText)
           }
       });
-  }, null, true, 'Europe/Moscow')
-    
-  });
-  
-client.on('message',async msg => {
-    //console.log(msg.content.substring(0,2));
-    if (msg.content.substring(0,2) === prefix)
-    {
-        let command = msg.content.substring(2)
-        let args = command.replace(/ +/g,' ').trim().split(' ')
-        let action = args.shift()
-        let answer
-        //console.log(action)
-        if (action === 'birthday') {
-         
-            let birthday = new Birthday(args,msg);
-            answer = await birthday.processCommand()
-            msg.reply(answer)
-          }
-    }
-  });
-
-start();
+  })

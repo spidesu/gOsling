@@ -9,7 +9,7 @@ class Birthday {
         this.guild = msg.guild.id
         this.msg = msg
         this.typicalAnswer = "Тебе сюда нельзя"
-        this.adminCommands = ['add','delete','channel','role']
+        this.adminCommands = ['add','delete','channel','role','list']
 
     }
     async processCommand()
