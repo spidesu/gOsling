@@ -87,7 +87,7 @@ class Birthday {
                 guild = new Guild({guild: guildId})
                 await guild.save()
             }
-            let user = await User.findOne({guildMemberId: guildMemberId, guild: guild.id});
+            let user = await User.findOne({guildMemberId: guildMemberId, guild: guildId});
             if (user)
             {
                 user.birthDate = birthdate
@@ -95,7 +95,7 @@ class Birthday {
             }
             else
             {
-                let user = new User({guildMemberId: guildMemberId, guild: guild.id, birthDate: birthdate})
+                let user = new User({guildMemberId: guildMemberId, guild: guildId, birthDate: birthdate})
                 await user.save()
             }
             message = 'День рождения успешно добавлен/обновлен'
@@ -130,18 +130,6 @@ class Birthday {
         return "На этот канал будут поступать сообщения о днях рождениях"
     }
 
-    async getTodayBirthdays(guildId)
-    {
-        let guild = await Guild.findOne({guild: guildId})
-
-        if (!guild)
-        {
-            return false            
-        }
-        let birthdayMembers = await User.find({guild: guild._id})
-
-        return birthdayMembers
-    }
 
     async setBirthdayRole(args,guildId, msg)
     {
