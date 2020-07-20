@@ -166,7 +166,7 @@ class Birthday {
         users.forEach((user) => {
             userName = msg.guild.members.cache.find(member => member.user.id === user.guildMemberId)
             userName = userName.user.username
-            message += userName + ' - ' + tools.formatDate(user.birthDate)
+            message += userName + ' - ' + tools.formatDate(user.birthDate) + '\n'
         })
 
         return message
