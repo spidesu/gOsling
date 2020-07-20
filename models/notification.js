@@ -1,16 +1,15 @@
 const {Schema,model} = require('mongoose')
 
 const notification = new Schema({
-    notificationText: {
+    text: {
         type: String,
         required: true,
     },
     guild: {
-        type: Schema.Types.ObjectId,
-        ref: 'Guild',
+        type: String,
         required: true,
     },
-    notificateTime: {
+    date: {
         type: Date,
         required: true,
     },

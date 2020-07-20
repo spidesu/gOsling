@@ -1,7 +1,7 @@
 require('dotenv').config()
 const Discord = require('discord.js')
 const mongoose = require('mongoose')
-const CronJob = require('cron').CronJob
+const schedule = require('node-schedule')
 const Birthday = require('./actions/birthdayAction')
 const Guild = require("./models/guild")
 const tools = require("./tools")
@@ -25,7 +25,7 @@ process.on('uncaughtException', (err) => {
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
-    let birthdayJob = new CronJob ('0 0 12 * * *', async () => {
+    let birthdayJob = schedule.scheduleJob ('0 0 12 * * *', async () => {
       let role
       let birthdayArray = []
       let guilds = await Guild.find({})
@@ -60,7 +60,6 @@ client.on('ready', () => {
           }
       });
   }, null, true, 'Europe/Moscow')
-  birthdayJob.start()
     
   });
   
