@@ -1,7 +1,7 @@
 const {Schema,model} = require('mongoose')
 
 const guild = new Schema({
-    guild: {
+    guildId: {
         type: String,
         required: true,
     },
@@ -16,7 +16,7 @@ const guild = new Schema({
     created: {
         type:Date,
         default: Date.now()
-    }
+    },
 
 })
 

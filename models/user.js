@@ -6,8 +6,7 @@ const user = new Schema({
         required: true,
     },
     guild: {
-        type: Schema.Types.ObjectId,
-        ref: 'Guild',
+        type: String,
         required: true,
     },
     birthDate: {
