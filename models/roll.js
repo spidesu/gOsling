@@ -1,23 +1,26 @@
 const {Schema,model} = require('mongoose')
 
-const guild = new Schema({
+const roll = new Schema({
+    name: {
+        type: String,
+        required: true,
+    },
+    elements: [{
+        type: String,
+        required: true,
+    }],
     guild: {
         type: String,
         required: true,
     },
-    birthdayChannel: {
-        type: String,
-        required: false,
-    },
-    birthdayRole: {
-        type: String,
-        required: false,
+    options: {
+        type: Object,
     },
     created: {
         type:Date,
         default: Date.now()
-    },
+    }
 
 })
 
-module.exports = model('Guild',guild)
+module.exports = model('Roll',roll)

@@ -1,3 +1,4 @@
+const Roll = require("../models/roll")
 class Dice {
     constructor(args, msg = null)
     {
@@ -7,6 +8,84 @@ class Dice {
 
     async processCommand()
     {
+        let answer
+        let command = this.args[0]
+
+        if (command.search(/^d\d*/) != -1) {
+            answer = this.diceRoll()
+            return answer
+        }
+        switch (command) {
+            case 'create':
+                answer = this.createRoll()
+                break;    
+            default:
+                answer = this.customRoll(command)
+                break;
+        }
+        return answer
+        }
+    
+        async customRoll(command)
+        {
+            if (this.args.length < 2)
+            {
+                return "Недостаточное число аргументов"
+            }
+            let roll = await Roll.findOne({name: command, guild: this.msg.guild.id})
+            let count = this.args[1]
+            let result = []
+            let randomElement
+            let repeats = []
+            let answer
+            if (!roll)
+            {
+                return 'Такого ролла не существует на сервере. Если хотите создать и ты админ, напишите g!roll create'
+            }
+            let maxRepeats = roll.options.maxRepeats
+            let i = 0
+            while (i < count)
+            {
+                randomElement = roll.elements[Math.floor(Math.random() * roll.elements.length)]
+                if (typeof(repeats[randomElement]) === 'undefined')
+                {
+                    repeats[randomElement] = 0
+                }
+
+                if (repeats[randomElement] < maxRepeats)
+                {
+                   // console.log(repeats[randomElement])
+                    result.push(randomElement)
+                    repeats[randomElement]++
+                    i++;
+                }
+            }
+            console.log(repeats)
+            answer='Результат:\n'
+            result.forEach((value) => {
+                answer=answer + value + '\n'
+            })
+
+            return answer
+        }
+
+        async createRoll()
+        {
+            let collector
+            let answer
+            return 'Андер констракшн'
+           // collector = await this.msg.channel.awaitMessages(filter)
+           // answer = collector.first().content;
+        }
+
+    async getRandomValue(array)
+    {
+        randomElement = array[Math.floor(Math.random() * array.length)]
+
+        return randomElement
+    }
+    async diceRoll()
+    {
         let result = []
         if (this.args.length!=2)
         {
@@ -15,10 +94,7 @@ class Dice {
         this.dice = this.args.shift()
         this.count = this.args.shift()
         console.log(typeof(+this.dice.substring(1)))
-        if (isNaN(+this.dice.substring(1)) || this.dice.substring(0,1) !== 'd')
-        {
-            return 'Введите дайс в формате d%'
-        }
+
         this.diceType = this.dice.substring(1)
     
         if (isNaN(+this.count))
