@@ -34,6 +34,10 @@ class Dice {
             }
             let roll = await Roll.findOne({name: command, guild: this.msg.guild.id})
             let count = this.args[1]
+            if (isNaN(+count))
+            {
+                return "Количество должно быть числом!"
+            }
             let result = []
             let randomElement
             let repeats = []
