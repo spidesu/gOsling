@@ -44,9 +44,15 @@ class Dice {
             }
             let maxRepeats = roll.options.maxRepeats
             let i = 0
+            let max = (roll.elements.length * maxRepeats)
+            if (count > max)
+            {
+                return 'Невозможно создать список такой длины из-за ограничений ролла. Максимальный размер списка:' + max
+            }
             while (i < count)
             {
-                randomElement = roll.elements[Math.floor(Math.random() * roll.elements.length)]
+                let index = Math.floor(Math.random() * roll.elements.length)
+                randomElement = roll.elements[index]
                 if (typeof(repeats[randomElement]) === 'undefined')
                 {
                     repeats[randomElement] = 0
@@ -58,6 +64,9 @@ class Dice {
                     result.push(randomElement)
                     repeats[randomElement]++
                     i++;
+
+                } else {
+                    roll.elements.splice(index,1)
                 }
             }
             console.log(repeats)
