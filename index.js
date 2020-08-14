@@ -3,6 +3,7 @@ const Discord = require('discord.js')
 const mongoose = require('mongoose')
 const schedule = require('node-schedule')
 const Birthday = require('./actions/birthdayAction')
+const Dice = require('./actions/diceAction')
 const Guild = require("./models/guild")
 const tools = require("./tools")
 const fs = require('fs')
@@ -48,6 +49,13 @@ client.on('message',async msg => {
             answer = await birthday.processCommand()
             msg.reply(answer)
           }
+        if (action === 'roll') {
+         
+          let dice= new Dice(args,msg);
+          answer = await dice.processCommand()
+          msg.reply(answer)
+        }
+          
     }
   });
 
