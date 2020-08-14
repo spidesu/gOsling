@@ -69,7 +69,6 @@ class Dice {
                     roll.elements.splice(index,1)
                 }
             }
-            console.log(repeats)
             answer='Результат:\n'
             result.forEach((value) => {
                 answer=answer + value + '\n'
