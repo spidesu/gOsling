@@ -118,7 +118,7 @@ class Dice {
         }
         for(let i = 0; i<this.count; i++) 
         {
-            result.push(Math.floor(Math.random() * (this.diceType - 1)) + 1)
+            result.push(Math.floor(Math.random() * (this.diceType)) + 1)
         }
         return await this.toString(result)
     }
