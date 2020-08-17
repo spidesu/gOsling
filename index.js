@@ -1,13 +1,13 @@
 require('dotenv').config()
 const Discord = require('discord.js')
 const mongoose = require('mongoose')
-const schedule = require('node-schedule')
 const Birthday = require('./actions/birthdayAction')
 const Dice = require('./actions/diceAction')
 const Guild = require("./models/guild")
 const tools = require("./tools")
 const fs = require('fs')
 const util = require('util')
+const CronJob = require('cron').CronJob;
 const client = new Discord.Client()
 const log_error = fs.createWriteStream(__dirname + '/logs/error.log', {flags:'a'})
 const prefix = 'g!'
@@ -17,6 +17,8 @@ async function start() {
     const url = process.env.MONGODB_URL
     await mongoose.connect(url, {useNewUrlParser: true,useUnifiedTopology: true})
     await client.login(process.env.TOKEN)
+    let birthdayJob = new CronJob('0 0 12 * * *', tools.getTodayBirthday(client))
+    birthdayJob.start()
 }
 
 process.on('uncaughtException', (err) => {
@@ -61,38 +63,3 @@ client.on('message',async msg => {
 
 start();
 
-let birthdayJob = schedule.scheduleJob('* * * * *', async () => {
-      let role
-      let birthdayArray = []
-      let guilds = await Guild.find({})
-      guilds.forEach(async guild_db => {
-          let messageText = "Поздравляем {message} с днём рождения! Всем по тортику!"
-          let guild = await client.guilds.cache.get(guild_db.guild)
-          if (!guild || !guild_db.birthdayChannel)
-          {
-            return;
-          }
-          
-          let birthdayChannel = guild.channels.cache.get(guild_db.birthdayChannel)
-          let birthdayMembers = await tools.getTodayBirthdays(guild_db.guild)
-          if (guild_db.birthdayRole)
-          {
-            role = guild.roles.cache.get(guild_db.birthdayRole)
-          }
-          if (birthdayMembers.length > 0)
-          {
-            birthdayArray = []
-            //console.log(birthdayMembers)
-          birthdayMembers.forEach(member => {
-              let guildMember = guild.members.cache.get(member.guildMemberId)
-              birthdayArray.push(guildMember.toString())
-              //console.log(member)
-              if (typeof role !== "undefined")
-              guildMember.roles.add(role)
-          })
-          console.log(birthdayArray)
-          messageText = messageText.replace(/{message}/, birthdayArray.join(" "))
-          birthdayChannel.send(messageText)
-          }
-      });
-  })
