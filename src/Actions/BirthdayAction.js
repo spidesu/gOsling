@@ -1,56 +1,50 @@
-const User = require("../models/user")
-const tools = require ("../tools")
-//const { Guild } = require("discord.js")
-const Guild = require("../models/guild")
-class Birthday {
-    constructor(args, msg = null) 
-    {
-        this.args = args
-        this.guild = msg.guild.id
-        this.msg = msg
-        this.typicalAnswer = "Тебе сюда нельзя"
-        this.adminCommands = ['add','delete','channel','role','list']
+const User = require("../Models/User")
+const tools = require ("../../tools")
+const Guild = require("../Models/Guild")
+let BirthdayAction = {
+    typicalAnswer: 'Тебе сюда нельзя',
+    adminCommands : ['add','delete','show','channel','role'],
 
-    }
-    async processCommand()
+    process(msg,args)
     {
-        let command = this.args.shift()
+        let command = args.shift()
         let answer
+        let guild = msg.guild.id
         //console.log(this.action)
         //console.log(this.args)
         //console.log(this.guild)
         if (this.adminCommands.indexOf(command) != -1)
         {
-            if (!this.msg.member.hasPermission("ADMINISTRATOR"))
+            if (!msg.member.hasPermission("ADMINISTRATOR"))
             return this.typicalAnswer
         }
         switch (command) {
             case 'add':
-                answer = await this.addBirthday(this.args, this.guild, this.msg)
+                answer =  this.addBirthday(args, guild, msg)
                 break;
             case 'month':
-                answer = await this.getMonthBirthday(this.args)
+                answer =  this.getMonthBirthday(args)
                 break;
             case 'delete':
-                answer = await this.deleteBirthday(this.args,this.msg)
+                answer =  this.deleteBirthday(args,msg)
                 break;
             case 'show':
-                answer = await this.getBirthday(this.args, this.msg)
+                answer =  this.getBirthday(args, msg)
                 break;
             case 'channel':
-                answer = await this.setBirthdayChannel(this.guild,this.msg.channel.id)
+                answer =  this.setBirthdayChannel(guild,msg.channel.id)
                 break;
             case 'role':
-                answer = await this.setBirthdayRole(this.args, this.guild,this.msg)
+                answer =  this.setBirthdayRole(args, guild,msg)
                 break;
             case 'list':
-                answer = await this.getBirthdayList(this.guild,this.msg)
+                answer =  this.getBirthdayList(guild,msg)
             default:
                 break; 
         }
 
         return answer
-    }
+    },
     async getBirthday(args,msg)
     {
         let userName = args[0]
@@ -63,7 +57,7 @@ class Birthday {
         }
         return "Я не нашел такого человека в базе(  "
 
-    }
+    },
 
     async addBirthday(args, guildId,msg)
     {
@@ -103,7 +97,7 @@ class Birthday {
             message = 'День рождения успешно добавлен/обновлен'
             return message
     //    });
-    }
+    },
 
     async deleteBirthday(args,msg)
     {
@@ -121,7 +115,7 @@ class Birthday {
         user.birthDate = null
         await user.save();
         return "День рождения успешно удален"
-    }
+    },
 
     async setBirthdayChannel(guildId,channel)
     {
@@ -133,8 +127,7 @@ class Birthday {
         guild.birthdayChannel = channel
         await guild.save()
         return "На этот канал будут поступать сообщения о днях рождениях"
-    }
-
+    },
 
     async setBirthdayRole(args,guildId, msg)
     {
@@ -156,7 +149,7 @@ class Birthday {
 
         return message
 
-    }
+    },
 
     async getBirthdayList(guildId,msg)
     {
@@ -173,4 +166,4 @@ class Birthday {
     }
 }
 
-module.exports = Birthday
+module.exports = BirthdayAction

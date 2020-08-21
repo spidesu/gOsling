@@ -1,13 +1,12 @@
-const Roll = require("../models/roll")
-class Dice {
-    constructor(args, msg = null)
-    {
-        this.args = args
-        this.msg = msg
-    }
+console.log('Подгрузил')
+const Roll = require("../Models/Roll")
 
-    async processCommand()
+let RollAction = {
+
+    process(msg,args)
     {
+        this.msg = msg
+        this.args = args
         let answer
         let command = this.args[0]
 
@@ -24,7 +23,7 @@ class Dice {
                 break;
         }
         return answer
-        }
+        },
     
         async customRoll(command)
         {
@@ -79,7 +78,7 @@ class Dice {
             })
 
             return answer
-        }
+        },
 
         async createRoll()
         {
@@ -88,16 +87,17 @@ class Dice {
             return 'Андер констракшн'
            // collector = await this.msg.channel.awaitMessages(filter)
            // answer = collector.first().content;
-        }
+        },
 
     async getRandomValue(array)
     {
         randomElement = array[Math.floor(Math.random() * array.length)]
 
         return randomElement
-    }
-    async diceRoll()
+    },
+    diceRoll()
     {
+        console.log(this.args)
         let result = []
         if (this.args.length!=2)
         {
@@ -120,10 +120,11 @@ class Dice {
         {
             result.push(Math.floor(Math.random() * (this.diceType)) + 1)
         }
-        return await this.toString(result)
-    }
+        console.log(this.diceType)
+        return this.toString(result)
+    },
 
-    async toString(result)
+    toString(result)
     {
         let dices = ''
         let answer
@@ -137,4 +138,5 @@ class Dice {
     }
 }
 
-module.exports = Dice
+
+module.exports = RollAction
